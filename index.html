@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#000000" />
+    <title>Alarm</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./src/style.css?v=4" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <h1>Alarm</h1>
+        <div class="live-clock"><span id="currentTime">12:00:00 AM</span><button class="overflow-button" aria-label="More options">⋮</button></div>
+      </header>
+
+      <main class="dashboard">
+        <section class="next-panel" aria-label="Next alarm">
+          <div class="next-copy"><p id="ringSummary">Ring in 1 day 1 hour 24 minutes</p><span id="nextAlarmLabel">Next alarm</span></div>
+        </section>
+
+        <section class="alarm-section">
+          <div class="section-heading"><span class="count" id="alarmCount">3 active</span><button class="text-button" id="clearButton">Clear inactive</button></div>
+          <div class="alarm-list" id="alarmList"></div>
+          <div class="empty-state" id="emptyState" hidden><div class="empty-icon">+</div><h3>No alarms yet</h3><p>Create one to give tomorrow a little structure.</p><button class="primary-button" id="emptyAddButton">Create alarm</button></div>
+        </section>
+
+        <section class="tool-view" id="worldClockView" hidden>
+          <div class="tool-heading"><span class="eyebrow">Across the world</span><h2>World clock</h2></div>
+          <div class="city-controls">
+            <label class="city-search"><span>Search city or country</span><input id="citySearch" list="cityOptions" placeholder="Try Paris or Brazil" autocomplete="off" /></label>
+            <button class="primary-button city-add-button" id="addCityButton" type="button">Add</button>
+          </div>
+          <datalist id="cityOptions"></datalist>
+          <div class="city-list" id="cityList"></div>
+        </section>
+        <section class="tool-view" id="stopwatchView" hidden>
+          <div class="tool-heading"><span class="eyebrow">Focus on the moment</span><h2>Stopwatch</h2></div>
+          <div class="stopwatch-face" id="stopwatchDisplay">00:00.00</div>
+          <div class="tool-actions"><button class="primary-button" id="stopwatchStart">Start</button><button class="secondary-button" id="stopwatchReset">Reset</button></div>
+        </section>
+        <section class="tool-view" id="timerView" hidden>
+          <div class="tool-heading"><span class="eyebrow">Make time count</span><h2>Timer</h2></div>
+          <div class="timer-inputs"><label><span>Hours</span><input id="timerHours" type="number" min="0" max="99" value="0" /></label><b>:</b><label><span>Minutes</span><input id="timerMinutes" type="number" min="0" max="59" value="5" /></label><b>:</b><label><span>Seconds</span><input id="timerSeconds" type="number" min="0" max="59" value="00" /></label></div>
+          <div class="timer-picker-tabs"><button class="timer-unit" data-unit="hours">Hours</button><button class="timer-unit active" data-unit="minutes">Minutes</button><button class="timer-unit" data-unit="seconds">Seconds</button></div>
+          <div class="clock-face timer-clock" id="timerClockFace" aria-label="Choose timer value"><span class="clock-hand"></span><span class="clock-dot"></span></div>
+          <div class="stopwatch-face" id="timerDisplay">05:00</div>
+          <div class="tool-ringtone"><button type="button" class="ringtone-choice" data-ringtone-picker="timer"><span>Ringtone</span><strong id="timerRingtoneLabel">Classic</strong><b>›</b></button><select id="timerRingtone" hidden><option value="classic">Classic</option><option value="pulse">Pulse</option><option value="soft">Soft bells</option><option value="chime">Bright chime</option><option value="digital">Digital</option><option value="rising">Rising tone</option><option value="alert">Alert</option><option value="marimba">Marimba</option><option value="double">Double beep</option><option value="gentle">Gentle bell</option></select><button type="button" class="preview-sound" id="previewTimerSound">Play</button></div>
+          <label class="tool-file form-field ringtone-legacy-field"><span>Use downloaded ringtone</span><input id="timerRingtoneFile" type="file" accept="audio/*" /></label>
+          <label class="tool-file form-field saved-ringtone-field ringtone-legacy-field" id="timerSavedRingtoneField"><span>Saved downloaded ringtones</span><select id="timerSavedRingtoneInput"><option value="">Choose a saved ringtone</option></select></label>
+          <div class="tool-actions"><button class="primary-button" id="timerStart">Start</button><button class="secondary-button" id="timerReset">Reset</button></div>
+        </section>
+
+      </main>
+      <button class="floating-add" id="addAlarmButton" aria-label="Add alarm">+</button>
+      <div class="save-toast" id="saveToast" role="status" aria-live="polite">Alarm saved</div>
+      <section class="ring-overlay" id="ringOverlay" hidden role="alertdialog" aria-labelledby="ringTitle">
+        <img class="ring-background" id="ringBackground" alt="" hidden />
+        <div class="ring-pulse">◷</div><p class="ring-eyebrow">Alarm ringing</p><h2 id="ringTitle">Morning reset</h2><p id="ringTime">07:00 AM</p>
+        <div class="ring-actions"><button class="snooze-button" id="snoozeButton">Snooze 5 min</button><button class="dismiss-button" id="dismissButton">Dismiss</button></div>
+      </section>
+      <nav class="bottom-nav" aria-label="Clock navigation"><button class="nav-item active" data-view="alarm">◷<span>Alarm</span></button><button class="nav-item" data-view="worldClock">◉<span>World Clock</span></button><button class="nav-item" data-view="stopwatch">◐<span>Stopwatch</span></button><button class="nav-item" data-view="timer">⌛<span>Timer</span></button></nav>
+    </div>
+
+    <dialog id="alarmDialog">
+      <form id="alarmForm">
+        <div class="dialog-header"><div><p class="eyebrow" id="dialogEyebrow">New alarm</p><h2 id="dialogTitle">Set alarm time</h2></div><button type="button" class="close-dialog" id="closeDialog" aria-label="Close">x</button></div>
+        <div class="picker-time" aria-label="Alarm time"><input id="hourInput" type="number" min="1" max="12" value="7" aria-label="Hour" /><span>:</span><input id="minuteInput" type="number" min="0" max="59" value="00" aria-label="Minute" /><div class="period-picker"><button type="button" class="period-button active" data-period="AM">AM</button><button type="button" class="period-button" data-period="PM">PM</button></div></div>
+        <div class="clock-face" id="clockFace" aria-label="Choose hour"><span class="clock-hand"></span><span class="clock-dot"></span></div>
+        <div class="picker-actions"><button type="button" class="picker-cancel" id="cancelPicker">CANCEL</button><button type="button" class="picker-ok" id="confirmPicker">OK</button></div>
+        <div class="picker-details" id="pickerDetails" hidden>
+          <div class="picker-divider"></div>
+          <label class="form-field"><span>Label</span><input type="text" id="labelInput" value="Morning reset" maxlength="32" required /></label>
+          <label class="form-field"><span>Repeat</span><select id="repeatInput"><option>Every day</option><option>Weekdays</option><option>Weekends</option><option>Once</option></select></label>
+          <label class="form-field"><span>Ringtone &amp; vibration</span><div class="sound-row"><button type="button" class="ringtone-choice" data-ringtone-picker="alarm"><span>Ringtone</span><strong id="alarmRingtoneLabel">Classic</strong><b>›</b></button><select id="soundInput" hidden><option value="classic">Classic</option><option value="pulse">Pulse</option><option value="soft">Soft bells</option><option value="chime">Bright chime</option><option value="digital">Digital</option><option value="rising">Rising tone</option><option value="alert">Alert</option><option value="marimba">Marimba</option><option value="double">Double beep</option><option value="gentle">Gentle bell</option></select><button type="button" class="preview-sound" id="previewSound">Play</button></div></label>
+          <label class="form-field ringtone-legacy-field"><span>Use downloaded ringtone</span><input id="ringtoneFile" type="file" accept="audio/*" /></label>
+          <label class="form-field"><span>Use downloaded picture</span><input id="pictureFile" type="file" accept="image/*" /></label>
+          <label class="form-field saved-picture-field" id="savedPictureField"><span>Saved downloaded pictures</span><select id="savedPictureInput"><option value="">Choose a saved picture</option></select></label>
+          <label class="form-field saved-ringtone-field ringtone-legacy-field" id="savedRingtoneField"><span>Saved downloaded ringtones</span><select id="savedRingtoneInput"><option value="">Choose a saved ringtone</option></select></label>
+          <label class="check-field"><input type="checkbox" id="vibrateInput" checked /><span>Vibrate</span></label>
+          <button type="button" class="primary-button full-button" id="saveAlarmButton">Save alarm <span>&#8594;</span></button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="ringtoneDialog" class="ringtone-dialog">
+      <div class="ringtone-dialog-header"><div><p class="eyebrow">Choose a sound</p><h2>Ringtone</h2></div><button type="button" class="close-dialog" id="closeRingtoneDialog" aria-label="Close">x</button></div>
+      <section class="ringtone-group custom-ringtone-group"><h3>Saved ringtones</h3><div id="savedPickerRingtones"></div><label class="custom-ringtone-button">Choose audio file<input id="pickerRingtoneFile" type="file" accept="audio/*" /></label></section>
+      <section class="ringtone-group"><h3>System ringtones</h3><div id="systemRingtoneList"></div></section>
+    </dialog>
+    <dialog id="wallpaperDialog" class="wallpaper-dialog">
+      <div class="dialog-header"><div><p class="eyebrow">Personalize alarm</p><h2>Wallpaper</h2></div><button type="button" class="close-dialog" id="closeWallpaperDialog" aria-label="Close">x</button></div>
+      <div class="wallpaper-preview" id="wallpaperPreview"><span>No wallpaper selected</span></div>
+      <label class="custom-ringtone-button wallpaper-upload">Choose wallpaper<input id="wallpaperFile" type="file" accept="image/*" /></label>
+      <div class="wallpaper-actions"><button type="button" class="secondary-button" id="removeWallpaperButton">Remove</button><button type="button" class="secondary-button" id="downloadWallpaperButton">Download</button><button type="button" class="primary-button" id="applyWallpaperButton">Apply</button></div>
+    </dialog>
+    <script type="module" src="./src/main.js?v=4"></script>
+  </body>
+</html>
