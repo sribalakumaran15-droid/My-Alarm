@@ -527,7 +527,6 @@ $('#addAlarmButton').addEventListener('click', () => openDialog());
 $('#emptyAddButton').addEventListener('click', () => openDialog());
 $('#closeDialog').addEventListener('click', () => dialog.close());
 function saveAlarm() {
-  if (pickerStage === 'time') return;
   const details = { time: getPickerTime(), label: $('#labelInput').value.trim(), repeat: $('#repeatInput').value, sound: $('#soundInput').value, ringtoneData: selectedRingtoneData, pictureData: selectedPictureData, vibrate: $('#vibrateInput').checked };
   if (editingId) alarms = alarms.map((alarm) => alarm.id === editingId ? { ...alarm, ...details, enabled: true } : alarm);
   else alarms.push({ id: Date.now(), ...details, enabled: true });
@@ -557,12 +556,7 @@ $('#savedPictureInput').addEventListener('change', (event) => {
   showSavedToast(`${picture.name} selected`);
 });
 $('#confirmPicker').addEventListener('click', () => {
-  pickerStage = 'details';
-  $('#pickerDetails').hidden = false;
-  document.querySelector('.picker-actions').hidden = true;
-  $('#dialogTitle').textContent = editingId ? 'Edit alarm' : 'Alarm details';
-  $('#saveAlarmButton').innerHTML = editingId ? 'Update <span>&#8594;</span>' : 'Save alarm <span>&#8594;</span>';
-  $('#labelInput').focus();
+  saveAlarm();
 });
 $('#cancelPicker').addEventListener('click', () => dialog.close());
 $('#clearButton').addEventListener('click', () => { alarms = alarms.filter((alarm) => alarm.enabled === true); save(); render(); });

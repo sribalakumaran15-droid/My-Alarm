@@ -1440,6 +1440,7 @@ input[type=file] {
 @media (max-width: 600px) {
 	body {
 		min-width: 0;
+		overflow-x: hidden;
 	}
 
 	.app-shell {
@@ -1465,8 +1466,16 @@ input[type=file] {
 	}
 
 	.live-clock {
+		min-width: 0;
 		gap: 4px;
 		font-size: 12px;
+	}
+
+	.live-clock span {
+		max-width: 126px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.overflow-button {
@@ -1482,9 +1491,10 @@ input[type=file] {
 	}
 
 	.next-copy p {
-		max-width: 100%;
+		max-width: calc(100vw - 72px);
 		font-size: clamp(27px, 8.5vw, 39px);
 		overflow-wrap: anywhere;
+		word-break: normal;
 	}
 
 	.next-copy span {
@@ -1508,6 +1518,7 @@ input[type=file] {
 	}
 
 	.alarm-card {
+		width: 100%;
 		min-height: 168px;
 		border-radius: 16px;
 		padding: 38px 18px 18px;
@@ -1637,6 +1648,14 @@ input[type=file] {
 		max-height: calc(100dvh - 24px);
 		margin: auto;
 		border-radius: 16px;
+	}
+
+	dialog form {
+		padding: 22px 18px;
+	}
+
+	.dialog-header h2 {
+		font-size: 23px;
 	}
 
 	.picker-time input {
